@@ -1,8 +1,12 @@
 package com.scastellanos.mastermind;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
+import com.scastellanos.mastermind.dto.GuessHistoryDTO;
 import com.scastellanos.mastermind.dto.PegDTO;
 import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.entity.Color;
@@ -242,4 +247,26 @@ public class MastermindApplicationTests {
 		assertEquals(4,r.getOnlyColorGuess().size());
 	}
 	
+	
+	@Test
+	public void testGameGuessWithGameHistory() throws CreationException, GuessException {
+		GameIdResponse gameIdResponse = gameService.createGame(4);
+		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
+		
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.PINK;
+		guessColors[1] = Color.BLUE;
+		guessColors[2] = Color.PURPLE;
+		guessColors[3] = Color.SILVER;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		gameService.processGuess(guessCode,game.getId());
+		
+		
+		List<GuessHistoryDTO> gameHistory = gameService.getGameHistory(game.getId());
+		
+		Assert.assertNotNull(gameHistory);
+		
+	}
 }

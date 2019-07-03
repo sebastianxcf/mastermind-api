@@ -1,9 +1,12 @@
 package com.scastellanos.mastermind.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
+import com.scastellanos.mastermind.dto.GuessHistoryDTO;
 import com.scastellanos.mastermind.dto.PegDTO;
 import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.exceptions.CreationException;
@@ -40,5 +43,13 @@ public interface GameService {
 	 */
 	ResponseDTO processGuess(PegDTO[] guess, Long gameId) throws GuessException;
 	
+	
+	/**
+	 * For a given game, retrieve all guess tries history. 
+	 * @param gameId
+	 * @return
+	 * @throws GuessException
+	 */
+	List<GuessHistoryDTO> getGameHistory(Long gameId) throws GuessException;
 	
 }

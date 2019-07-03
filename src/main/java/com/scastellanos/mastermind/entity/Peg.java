@@ -29,6 +29,9 @@ public class Peg implements Serializable {
 	@JoinColumn(name="code_id")
 	private Code code;
 	
+	@ManyToOne
+	@JoinColumn(name="guess_id")
+	private GuessHistory guess;
 	
 	public Peg (Color color){
 		this.id = UUID.randomUUID().toString();
@@ -127,6 +130,22 @@ public class Peg implements Serializable {
 	 */
 	public void setCode(Code code) {
 		this.code = code;
+	}
+
+
+	/**
+	 * @return the guess
+	 */
+	public GuessHistory getGuess() {
+		return guess;
+	}
+
+
+	/**
+	 * @param guess the guess to set
+	 */
+	public void setGuess(GuessHistory guess) {
+		this.guess = guess;
 	}
 
 

@@ -1,6 +1,7 @@
 package com.scastellanos.mastermind.services;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.scastellanos.mastermind.dto.CodeDTO;
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
+import com.scastellanos.mastermind.dto.GuessHistoryDTO;
 import com.scastellanos.mastermind.dto.PegDTO;
 import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.entity.Code;
@@ -239,5 +241,11 @@ public class GameServiceImpl implements GameService{
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public List<GuessHistoryDTO> getGameHistory(Long gameId) throws GuessException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
