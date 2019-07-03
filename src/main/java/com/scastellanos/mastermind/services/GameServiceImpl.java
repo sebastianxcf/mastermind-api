@@ -20,6 +20,7 @@ import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.repository.GameRepository;
 
 
+
 @Component
 public class GameServiceImpl implements GameService{
 
@@ -155,7 +156,13 @@ public class GameServiceImpl implements GameService{
 	 * @return
 	 */
 	private void validateGuessStructure(PegDTO[] guess,CodeDTO code) throws GuessException {
-		if(guess == null || guess.length != code.getCodeSize()) {
+		if(guess != null && guess.length == code.getCodeSize()) {
+			for (PegDTO peg : guess) {
+				if(peg.getColor()==null) {
+					throw new GuessException("1205","Null pegs in the guess");
+				}
+			}
+		}else {
 			throw new GuessException("203","Invalid guess length");
 		}
 	}

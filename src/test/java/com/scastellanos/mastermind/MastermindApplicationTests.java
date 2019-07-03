@@ -79,6 +79,37 @@ public class MastermindApplicationTests {
 		gameService.processGuess(guessCode,1L);
 	}
 	
+	@Test(expected = GuessException.class)
+	public void testGameGuessWithNotColorsInPegs() throws Exception {
+		PegDTO[] guess = new PegDTO[4];
+		PegDTO p1 = new PegDTO();
+		PegDTO p2 = new PegDTO();
+		PegDTO p3 = new PegDTO();
+		PegDTO p4 = new PegDTO();
+		p4.setColor(null);
+		guess[0] = p1;
+		guess[1] = p2;
+		guess[2] = p3;
+		guess[3] = p4;
+		gameService.processGuess(guess, 1L);
+	}
+	
+	@Test
+	public void testGuessGameWithNonCorrectColor() throws CreationException, GuessException {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.WHITE;
+		guessColors[1] = Color.ORANGE;
+		guessColors[2] = Color.GREEN;
+		guessColors[3] = Color.YELLOW;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(0,r.getOnlyColorGuess().size());
+		assertEquals(0,r.getPositionColorGuess().size());
+	}
+	
 	
 	
 	PegDTO[] createGuessCode(Color[] colors) {
