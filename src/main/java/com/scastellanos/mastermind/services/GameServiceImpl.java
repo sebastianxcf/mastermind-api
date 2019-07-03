@@ -3,6 +3,7 @@ package com.scastellanos.mastermind.services;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.scastellanos.mastermind.dto.CodeDTO;
@@ -13,11 +14,17 @@ import com.scastellanos.mastermind.entity.Code;
 import com.scastellanos.mastermind.entity.Game;
 import com.scastellanos.mastermind.entity.Peg;
 import com.scastellanos.mastermind.exceptions.CreationException;
+import com.scastellanos.mastermind.repository.GameRepository;
 
 @Component
 public class GameServiceImpl implements GameService{
 
 	Map<Long,Game> games = new HashMap<Long,Game>();
+	
+	@Autowired
+	GameRepository gameRespository;
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see com.scastellanos.mastermind.services.GameService#createGame(int)
@@ -31,6 +38,7 @@ public class GameServiceImpl implements GameService{
 		Code code = createCode(codeSize);
 		game.setCode(code);
 		
+		gameRespository.save(game);
 		response.setGameId(game.getId());
 		
 		games.put(game.getId(), game);
@@ -61,9 +69,12 @@ public class GameServiceImpl implements GameService{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.scastellanos.mastermind.services.GameService#getGame(java.lang.Long)
+	 */
 	@Override
 	public GameDTO getGame(Long gameId) {
-		Game game = this.games.get(gameId);
+		Game game = gameRespository.findById(gameId).orElse(null);
 		GameDTO dto = convertGameEntity2GameDTO(game);
 		return dto;
 	}

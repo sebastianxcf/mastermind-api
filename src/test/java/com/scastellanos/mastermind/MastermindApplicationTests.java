@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.scastellanos.mastermind.dto.GameDTO;
@@ -18,6 +19,7 @@ import com.scastellanos.mastermind.services.GameService;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = MastermindApplication.class)
+@TestPropertySource(locations="classpath:application-test.properties")
 public class MastermindApplicationTests {
 
 	
@@ -38,15 +40,13 @@ public class MastermindApplicationTests {
 	
 	@Test
 	public void testNewGameCreationCheckCodeNotNull() throws CreationException{
-		GameIdResponse gameIdResponse = gameService.createGame(4);
-		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
+		GameDTO game = gameService.getGame(2L);
 		assertNotNull(game.getCode());
 	}
 	
 	@Test
 	public void testCheckCodeSizeIsOk() throws CreationException{
-		GameIdResponse gameIdResponse = gameService.createGame(4);
-		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
+		GameDTO game = gameService.getGame(2L);
 		assertEquals(4,game.getCode().getCodeSize());
 	}
 
