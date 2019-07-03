@@ -132,7 +132,10 @@ public class GameServiceImpl implements GameService{
 		
 		validateGuessStructure(guess, gameDTO.getCode());
 		
-		return null;
+		//first check position and color correct, in order to avoid removing wrong white pegs then.
+		validateColorPosition(guess, response,gameDTO.getCode());
+		
+		return response;
 	}
 	
 	/**
@@ -165,5 +168,34 @@ public class GameServiceImpl implements GameService{
 		}else {
 			throw new GuessException("203","Invalid guess length");
 		}
+	}
+	
+	/**
+	 * A white peg is added to result, if a color peg appears in both code pattern and guess
+ 	 *  pattern but at different positions.
+	 * @param guess
+	 * @param result
+	 * @param code
+	 * @return
+	 */
+	private ResponseDTO validateColorPosition(PegDTO[] guess,ResponseDTO response,CodeDTO code) {
+		PegDTO pegGuess;
+		for (int i = 0; i < guess.length; i++) {
+			pegGuess = guess[i];
+			if(pegGuess!=null) {
+				if(code.getPegs()[i].getColor().equals(pegGuess.getColor())){
+					//flag the pegs in order to not evaluate it again.
+					code.getPegs()[i].setAlreadyChequed(true);
+					pegGuess.setAlreadyChequed(true);
+					//if its same color and same position, add a Black response
+					PegDTO pegBlack = new PegDTO();
+					pegBlack.setColor(Color.BLACK);
+					response.getPositionColorGuess().add(pegBlack);
+					
+				}
+			}
+		}
+		return response;
+		
 	}
 }

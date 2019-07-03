@@ -120,4 +120,37 @@ public class MastermindApplicationTests {
 		}
 		return PegDTOs;
 	}
+	
+	@Test
+	public void testGameGuessWithOnlyOneColorPositionCorrect() throws CreationException, GuessException {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.PINK;
+		guessColors[1] = Color.ORANGE;
+		guessColors[2] = Color.GREEN;
+		guessColors[3] = Color.YELLOW;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(1,r.getPositionColorGuess().size());
+		assertEquals(0,r.getOnlyColorGuess().size());
+	}
+	
+	@Test
+	public void testGameGuessWinGame() throws CreationException, GuessException {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.PINK;
+		guessColors[1] = Color.BLUE;
+		guessColors[2] = Color.PURPLE;
+		guessColors[3] = Color.SILVER;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		
+		assertEquals(4,r.getPositionColorGuess().size());
+		assertEquals(0,r.getOnlyColorGuess().size());
+	}
 }
