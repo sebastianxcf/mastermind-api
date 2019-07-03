@@ -13,6 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
+import com.scastellanos.mastermind.dto.PegDTO;
+import com.scastellanos.mastermind.dto.ResponseDTO;
+import com.scastellanos.mastermind.entity.Color;
 import com.scastellanos.mastermind.exceptions.CreationException;
 import com.scastellanos.mastermind.services.GameService;
 
@@ -55,4 +58,13 @@ public class MastermindApplicationTests {
 	public void testNewGameCreationCodeNegativeSize() throws CreationException {
 		gameService.createGame(-4);
 	}
+	
+	@Test
+	public void testGuessGame() throws CreationException {
+		PegDTO [] guessCode = new PegDTO[4];
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertNotNull(r);
+	}
+	
+	
 }

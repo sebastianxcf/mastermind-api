@@ -10,6 +10,7 @@ import com.scastellanos.mastermind.dto.CodeDTO;
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
 import com.scastellanos.mastermind.dto.PegDTO;
+import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.entity.Code;
 import com.scastellanos.mastermind.entity.Game;
 import com.scastellanos.mastermind.entity.Peg;
@@ -112,6 +113,16 @@ public class GameServiceImpl implements GameService{
 		}
 		
 		return pegsDTO;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see com.scastellanos.mastermind.services.GameService#processGuess(com.scastellanos.mastermind.dto.PegDTO[], java.lang.Long)
+	 */
+	@Override
+	public ResponseDTO processGuess(PegDTO[] guess, Long gameId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
