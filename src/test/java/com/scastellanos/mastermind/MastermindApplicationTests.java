@@ -60,13 +60,6 @@ public class MastermindApplicationTests {
 		gameService.createGame(-4);
 	}
 	
-	@Test
-	public void testGuessGame() throws CreationException, GuessException {
-		PegDTO [] guessCode = new PegDTO[4];
-		ResponseDTO r = gameService.processGuess(guessCode,1L);
-		assertNotNull(r);
-	}
-	
 	@Test(expected = GuessException.class)
 	public void testIncorrectGuessSize() throws CreationException, GuessException {
 		Color[] guessColors = new Color[3];
@@ -153,4 +146,100 @@ public class MastermindApplicationTests {
 		assertEquals(4,r.getPositionColorGuess().size());
 		assertEquals(0,r.getOnlyColorGuess().size());
 	}
+	
+	@Test
+	public void testGuessGameWithOnlyOneColorCorrect() throws CreationException, GuessException  {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.WHITE;
+		guessColors[1] = Color.PINK;
+		guessColors[2] = Color.GREEN;
+		guessColors[3] = Color.YELLOW;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(1,r.getOnlyColorGuess().size());
+		assertEquals(0,r.getPositionColorGuess().size());
+	}
+	
+	/**
+	 * In the scenario that we have more PegDTOs of correct color that the code has,it will count only one for each PegDTO in the code.
+	 * @throws Exception
+	 */
+	@Test
+	public void testGuessWhenMoreThanOneSameColorInTheGuessButOnlyOneInTheCode() throws CreationException, GuessException {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.WHITE;
+		guessColors[1] = Color.PINK;
+		guessColors[2] = Color.PINK;
+		guessColors[3] = Color.PINK;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(1,r.getOnlyColorGuess().size());
+		assertEquals(0,r.getPositionColorGuess().size());
+	}
+	
+	/**
+	 * In this scenario should return only one Black response even though in the guess there are two same correct colors. 
+	 *  
+	 * @throws CreationException
+	 * @throws GuessException
+	 */
+	@Test
+	public void testGameGuessWhichPrioritizePositionCorrectThanColorCorrect() throws CreationException, GuessException {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.BLUE;
+		guessColors[1] = Color.BLUE;
+		guessColors[2] = Color.GREEN;
+		guessColors[3] = Color.YELLOW;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(1,r.getPositionColorGuess().size());
+		assertEquals(0,r.getOnlyColorGuess().size());
+	}
+	
+	/**
+	 * This scenario test the case in which we have one color in the guess but more than one in the code, in this case will consider only one point. 
+	 * @throws CreationException
+	 * @throws GuessException
+	 */
+	@Test
+	public void testGameGuessWithLessBallsInGuessThanInCode() throws CreationException, GuessException {
+		
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.ORANGE;
+		guessColors[1] = Color.SILVER;
+		guessColors[2] = Color.GREEN;
+		guessColors[3] = Color.YELLOW;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,2L);
+		assertEquals(0,r.getPositionColorGuess().size());
+		assertEquals(1,r.getOnlyColorGuess().size());
+	}
+	
+	@Test
+	public void testGameGuessOnlyColorsCorrect() throws CreationException, GuessException {
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.BLUE;
+		guessColors[1] = Color.PINK;
+		guessColors[2] = Color.SILVER;
+		guessColors[3] = Color.PURPLE;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(0,r.getPositionColorGuess().size());
+		assertEquals(4,r.getOnlyColorGuess().size());
+	}
+	
 }

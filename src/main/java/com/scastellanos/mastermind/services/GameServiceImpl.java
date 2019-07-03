@@ -135,6 +135,9 @@ public class GameServiceImpl implements GameService{
 		//first check position and color correct, in order to avoid removing wrong white pegs then.
 		validateColorPosition(guess, response,gameDTO.getCode());
 		
+		//Second check only color correct
+		validateOnlyColor(guess, response,gameDTO.getCode());
+		
 		return response;
 	}
 	
@@ -196,6 +199,45 @@ public class GameServiceImpl implements GameService{
 			}
 		}
 		return response;
-		
+	}
+	
+	/** A black peg is added to result, if a color peg appears
+	 *  at the same positions in both code pattern and guess pattern.
+	 * @param guess
+	 * @param response
+	 * @param code
+	 * @return
+	 */
+	private ResponseDTO validateOnlyColor(PegDTO[] guess,ResponseDTO response,CodeDTO code) {
+		PegDTO pegGuess;
+		for (int i = 0; i < guess.length; i++) {
+			//check only for the same color
+			pegGuess = guess[i];
+			//In the case that for one peg in the guess there are to same color pegs in the code will return only one WHITE correct peg. 
+			//Others variation of the game can consider that the response should be two white pegs.
+			if(!pegGuess.isAlreadyChequed() && contains(pegGuess,code.getPegs())) {
+				pegGuess.setAlreadyChequed(true);
+				PegDTO pegWhite = new PegDTO();
+				pegWhite.setColor(Color.WHITE);
+				response.getOnlyColorGuess().add(pegWhite);
+			}
+		}
+		return response;
+	}
+	
+	/**
+	 * Check if the pegGuess parameter is contained at least one in the pegsCode. In that cases the peg in the code is flagged and the function return true. 
+	 * @param pegGuess
+	 * @param pegsCode
+	 * @return
+	 */
+	public boolean contains(PegDTO pegGuess,PegDTO[] pegsCode) {
+		for (PegDTO peg : pegsCode) {
+			if(!peg.isAlreadyChequed() && peg.getColor().name().equals(pegGuess.getColor().name())) {
+				peg.setAlreadyChequed(true);
+				return true;
+			}
+		}
+		return false;
 	}
 }
