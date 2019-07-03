@@ -1,26 +1,44 @@
 package com.scastellanos.mastermind.entity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+
 /**
  * 
  * @author scastellanos
  *
  */
+@Entity
+@Table(name = "code")
 public class Code {
 
 	public Code() {}
 	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Long id;
 	
 	
 	/**
 	 * The list of PegEntitys that conform the code.
 	 */
+	@OneToMany(mappedBy = "code", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OrderColumn(name = "pos")
 	private Peg[] pegs;
 	
 	
 	/**
 	 * The length of the code.
 	 */
+	@Column(name = "codeSize", nullable = false, length = 10)
 	private int codeSize;
 	
 	

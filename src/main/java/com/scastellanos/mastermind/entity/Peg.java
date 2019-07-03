@@ -4,7 +4,14 @@ import java.io.Serializable;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+@Entity
 public class Peg implements Serializable {
 	
 	/**
@@ -12,10 +19,14 @@ public class Peg implements Serializable {
 	 */
 	private static final long serialVersionUID = -7271548057445812355L;
 
+	@Id
 	String id;
 
+	@Enumerated(value = EnumType.STRING)
 	private Color color;
 	
+	@ManyToOne
+	@JoinColumn(name="code_id")
 	private Code code;
 	
 	

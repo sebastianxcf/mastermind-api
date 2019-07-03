@@ -1,6 +1,16 @@
 package com.scastellanos.mastermind.entity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "game")
 public class Game {
 
 	
@@ -10,12 +20,13 @@ public class Game {
 	/**
 	 * Game id
 	 */
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	
-	/**
-	 * The code auto-generated. This code should not be serialized in the response.
-	 */
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="code")
 	private Code code;
 	
 

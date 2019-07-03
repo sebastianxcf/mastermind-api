@@ -16,7 +16,11 @@ public interface GameService {
 	 */
 	GameIdResponse createGame(int codeSize) throws CreationException;
 	
-	
+	 /** 
+	   * Given an id, return the DTO representation of the Game  
+	   * @param gameId 
+	   * @return 
+	   */ 
 	GameDTO getGame(Long gameId);
 	
 	
