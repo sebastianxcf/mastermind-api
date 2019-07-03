@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
+import com.scastellanos.mastermind.exceptions.CreationException;
 
 @Component
 public interface GameService {
@@ -13,7 +14,7 @@ public interface GameService {
 	 * @param codeSize
 	 * @return GameIdResponse with the generated code and Id.
 	 */
-	GameIdResponse createGame(int codeSize);
+	GameIdResponse createGame(int codeSize) throws CreationException;
 	
 	
 	GameDTO getGame(Long gameId);

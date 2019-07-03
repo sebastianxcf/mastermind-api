@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.scastellanos.mastermind.dto.GameDTO;
 import com.scastellanos.mastermind.dto.GameIdResponse;
+import com.scastellanos.mastermind.exceptions.CreationException;
 import com.scastellanos.mastermind.services.GameService;
 
 @RunWith(SpringRunner.class)
@@ -29,22 +30,29 @@ public class MastermindApplicationTests {
 	
 	
 	@Test
-	public void testcreateNewGame() {
+	public void testcreateNewGame() throws CreationException {
 		
 		GameIdResponse gameIdResponse = gameService.createGame(4);
 		assertNotNull(gameIdResponse);
 	}
 	
 	@Test
-	public void testNewGameCreationCheckCodeNotNull(){
-		GameDTO game = gameService.getGame(1L);
+	public void testNewGameCreationCheckCodeNotNull() throws CreationException{
+		GameIdResponse gameIdResponse = gameService.createGame(4);
+		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
 		assertNotNull(game.getCode());
 	}
 	
 	@Test
-	public void testCheckCodeSizeIsOk(){
-		GameDTO game = gameService.getGame(1L);
+	public void testCheckCodeSizeIsOk() throws CreationException{
+		GameIdResponse gameIdResponse = gameService.createGame(4);
+		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
 		assertEquals(4,game.getCode().getCodeSize());
 	}
 
+	
+	@Test(expected = CreationException.class)
+	public void testNewGameCreationCodeNegativeSize() throws CreationException {
+		gameService.createGame(-4);
+	}
 }
