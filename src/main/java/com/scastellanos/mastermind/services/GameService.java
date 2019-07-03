@@ -7,6 +7,7 @@ import com.scastellanos.mastermind.dto.GameIdResponse;
 import com.scastellanos.mastermind.dto.PegDTO;
 import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.exceptions.CreationException;
+import com.scastellanos.mastermind.exceptions.GuessException;
 
 @Component
 public interface GameService {
@@ -37,7 +38,7 @@ public interface GameService {
 	 * @return
 	 * @throws GuessException
 	 */
-	ResponseDTO processGuess(PegDTO[] guess, Long gameId);
+	ResponseDTO processGuess(PegDTO[] guess, Long gameId) throws GuessException;
 	
 	
 }

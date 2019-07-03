@@ -12,10 +12,13 @@ import com.scastellanos.mastermind.dto.GameIdResponse;
 import com.scastellanos.mastermind.dto.PegDTO;
 import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.entity.Code;
+import com.scastellanos.mastermind.entity.Color;
 import com.scastellanos.mastermind.entity.Game;
 import com.scastellanos.mastermind.entity.Peg;
 import com.scastellanos.mastermind.exceptions.CreationException;
+import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.repository.GameRepository;
+
 
 @Component
 public class GameServiceImpl implements GameService{
@@ -23,7 +26,7 @@ public class GameServiceImpl implements GameService{
 	Map<Long,Game> games = new HashMap<Long,Game>();
 	
 	@Autowired
-	GameRepository gameRespository;
+	GameRepository gameRepository;
 	
 	
 	
@@ -39,7 +42,7 @@ public class GameServiceImpl implements GameService{
 		Code code = createCode(codeSize);
 		game.setCode(code);
 		
-		gameRespository.save(game);
+		gameRepository.save(game);
 		response.setGameId(game.getId());
 		
 		games.put(game.getId(), game);
@@ -75,7 +78,7 @@ public class GameServiceImpl implements GameService{
 	 */
 	@Override
 	public GameDTO getGame(Long gameId) {
-		Game game = gameRespository.findById(gameId).orElse(null);
+		Game game = gameRepository.findById(gameId).orElse(null);
 		GameDTO dto = convertGameEntity2GameDTO(game);
 		return dto;
 	}
@@ -120,10 +123,40 @@ public class GameServiceImpl implements GameService{
 	 * @see com.scastellanos.mastermind.services.GameService#processGuess(com.scastellanos.mastermind.dto.PegDTO[], java.lang.Long)
 	 */
 	@Override
-	public ResponseDTO processGuess(PegDTO[] guess, Long gameId) {
-		// TODO Auto-generated method stub
+	public ResponseDTO processGuess(PegDTO[] guess, Long gameId) throws GuessException {
+		ResponseDTO response = new ResponseDTO();
+		
+		Game game = findGameById(gameId); 
+		GameDTO gameDTO = convertGameEntity2GameDTO(game);;
+		
+		validateGuessStructure(guess, gameDTO.getCode());
+		
 		return null;
 	}
 	
+	/**
+	 * Given a gameId retrieve the game from the in memory DB.
+	 * @param gameId
+	 * @return
+	 * @throws GuessException
+	 */
+	public Game findGameById(Long gameId) throws GuessException{
+		Game game =  gameRepository.findById(gameId).orElse(null);
+		if(game!=null) {
+			return game;
+		}
+		throw new GuessException("201","Error retrieving the game");
+	}
 	
+	
+	/**
+	 * Validates that each color is inside of allowed colors.
+	 * @param guess
+	 * @return
+	 */
+	private void validateGuessStructure(PegDTO[] guess,CodeDTO code) throws GuessException {
+		if(guess == null || guess.length != code.getCodeSize()) {
+			throw new GuessException("203","Invalid guess length");
+		}
+	}
 }

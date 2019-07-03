@@ -17,6 +17,7 @@ import com.scastellanos.mastermind.dto.PegDTO;
 import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.entity.Color;
 import com.scastellanos.mastermind.exceptions.CreationException;
+import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.services.GameService;
 
 @RunWith(SpringRunner.class)
@@ -60,11 +61,32 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
-	public void testGuessGame() throws CreationException {
+	public void testGuessGame() throws CreationException, GuessException {
 		PegDTO [] guessCode = new PegDTO[4];
 		ResponseDTO r = gameService.processGuess(guessCode,1L);
 		assertNotNull(r);
 	}
 	
+	@Test(expected = GuessException.class)
+	public void testIncorrectGuessSize() throws CreationException, GuessException {
+		Color[] guessColors = new Color[3];
+		guessColors[0] = Color.WHITE;
+		guessColors[1] = Color.ORANGE;
+		guessColors[2] = Color.GREEN;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		gameService.processGuess(guessCode,1L);
+	}
 	
+	
+	
+	PegDTO[] createGuessCode(Color[] colors) {
+		PegDTO[] PegDTOs = new PegDTO[colors.length];
+		for (int i = 0; i < colors.length; i++) {
+			PegDTO p = new PegDTO(colors[i]);
+			PegDTOs[i] = p;
+		}
+		return PegDTOs;
+	}
 }
