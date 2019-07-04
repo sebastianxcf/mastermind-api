@@ -2,6 +2,7 @@ package com.scastellanos.mastermind.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,6 +30,9 @@ public class Game {
 	@JoinColumn(name="code")
 	private Code code;
 	
+	@OneToOne(mappedBy = "game",
+            fetch = FetchType.EAGER, optional = false)
+	private GuessHistory guess;
 
 	/**
 	 * @return the code
@@ -56,6 +60,20 @@ public class Game {
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the guess
+	 */
+	public GuessHistory getGuess() {
+		return guess;
+	}
+
+	/**
+	 * @param guess the guess to set
+	 */
+	public void setGuess(GuessHistory guess) {
+		this.guess = guess;
 	}
 
 

@@ -3,6 +3,7 @@ package com.scastellanos.mastermind;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -136,6 +137,23 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	public void testGameGuessWithOneColorAndPositionsCorrect() throws CreationException, GuessException {
+		
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.PINK;
+		guessColors[1] = Color.PURPLE;
+		guessColors[2] = Color.GREEN;
+		guessColors[3] = Color.YELLOW;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		ResponseDTO r = gameService.processGuess(guessCode,1L);
+		assertEquals(1,r.getPositionColorGuess().size());
+		assertEquals(1,r.getOnlyColorGuess().size());
+	}
+	
+	@Test
 	public void testGameGuessWinGame() throws CreationException, GuessException {
 		
 		Color[] guessColors = new Color[4];
@@ -266,7 +284,38 @@ public class MastermindApplicationTests {
 		
 		List<GuessHistoryDTO> gameHistory = gameService.getGameHistory(game.getId());
 		
-		Assert.assertNotNull(gameHistory);
+		Assert.assertThat(guessCode, is(gameHistory.get(0).getPegs()));
+		
+	}
+	
+	@Test
+	public void testGameGuessEmptyGameHistory() throws CreationException, GuessException {
+		GameIdResponse gameIdResponse = gameService.createGame(4);
+		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
+		List<GuessHistoryDTO> result = gameService.getGameHistory(game.getId());
+		
+		assertEquals(result.size(), 0);
+
+		
+	}
+	
+	@Test
+	public void testGameGuessWithNonEmptyGameHistory() throws CreationException, GuessException {
+		GameIdResponse gameIdResponse = gameService.createGame(4);
+		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
+		
+		Color[] guessColors = new Color[4];
+		guessColors[0] = Color.PINK;
+		guessColors[1] = Color.BLUE;
+		guessColors[2] = Color.PURPLE;
+		guessColors[3] = Color.SILVER;
+		
+		PegDTO [] guessCode = createGuessCode(guessColors);
+		
+		gameService.processGuess(guessCode,game.getId());
+		
+		List<GuessHistoryDTO> result = gameService.getGameHistory(game.getId());
+		assertTrue(!result.isEmpty());
 		
 	}
 }

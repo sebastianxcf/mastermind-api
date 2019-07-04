@@ -112,6 +112,8 @@ public class GameServiceImpl implements GameService{
 		//Second check only color correct
 		validateOnlyColor(guess, response,gameDTO.getCode());
 		
+		createGuessHistory(game, response, guess);
+		
 		if(response.getOnlyColorGuess().size() == game.getCode().getPegs().length) 
 			response.setHasWon(Boolean.TRUE);
 		
@@ -218,6 +220,26 @@ public class GameServiceImpl implements GameService{
 		return false;
 	}
 
+	/**
+	 * Given a game, a list of pegs and the results of process the guess, creates a new entry in guess History.
+	 * @param game
+	 * @param response
+	 * @param guessPegs
+	 */
+	private void createGuessHistory(Game game,ResponseDTO response,PegDTO[] guessPegs) {
+		GuessHistory history = new GuessHistory();
+		history.setNumberBlack(response.getPositionColorGuess().size());
+		history.setNumberWhite(response.getOnlyColorGuess().size());
+		history.setGame(game);
+		
+		game.setGuess(history);
+		
+		Peg[] pegsEntity = ServiceUtils.convertPegsDTO2PegsEntity(guessPegs);
+		history.setPegs(pegsEntity);
+		guessHistoryRepository.save(history);
+	}
+	
+	
 	/**
 	 * Return the history of guess attempts for a given game id. The response contains the guess, 
 	 * and a list of blacks hits and white hits. 
