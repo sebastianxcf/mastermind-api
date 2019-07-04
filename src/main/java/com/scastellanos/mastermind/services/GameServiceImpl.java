@@ -1,9 +1,7 @@
 package com.scastellanos.mastermind.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,21 +21,20 @@ import com.scastellanos.mastermind.exceptions.CreationException;
 import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.repository.GameRepository;
 import com.scastellanos.mastermind.repository.GuessHistoryRepository;
+import com.scastellanos.mastermind.util.ErrorCodes;
+import com.scastellanos.mastermind.util.ServiceUtils;
 
 
 
 @Component
 public class GameServiceImpl implements GameService{
 
-	Map<Long,Game> games = new HashMap<Long,Game>();
-	
 	@Autowired
 	GameRepository gameRepository;
 	
 	
 	@Autowired
 	GuessHistoryRepository guessHistoryRepository;
-	
 	
 	
 	/* (non-Javadoc)
@@ -50,12 +47,12 @@ public class GameServiceImpl implements GameService{
 		Game game = new Game();
 		
 		Code code = createCode(codeSize);
+		
 		game.setCode(code);
 		
 		gameRepository.save(game);
-		response.setGameId(game.getId());
 		
-		games.put(game.getId(), game);
+		response.setGameId(game.getId());
 		
 		return response;
 		
@@ -78,7 +75,7 @@ public class GameServiceImpl implements GameService{
 			}
 			return code;
 		}catch(NegativeArraySizeException e) {
-			throw new CreationException("101","Error creating game, incorrect code size");
+			throw new CreationException(ErrorCodes.MM_CREATION_101.getValue(),ErrorCodes.MM_CREATION_101.getDescription());
 			
 		}
 	}
@@ -89,44 +86,10 @@ public class GameServiceImpl implements GameService{
 	@Override
 	public GameDTO getGame(Long gameId) {
 		Game game = gameRepository.findById(gameId).orElse(null);
-		GameDTO dto = convertGameEntity2GameDTO(game);
+		GameDTO dto = ServiceUtils.convertGameEntity2GameDTO(game);
 		return dto;
 	}
 
-	/**
-	 * Convert a Game pojo to a DTO object in order to avoid using entity business outside service layer.
-	 * @param game
-	 * @return
-	 */
-	public  GameDTO convertGameEntity2GameDTO(Game game) {
-		GameDTO gameDTO = new GameDTO();
-		gameDTO.setId(game.getId());
-		
-		CodeDTO code = new CodeDTO();
-		if(game.getCode()!=null) {
-			code.setCodeSize(game.getCode().getCodeSize());
-			code.setPegs(convertPegsEntity2PegsDTO(game.getCode().getPegs()));
-			gameDTO.setCode(code);
-		}
-		
-		return gameDTO;
-	}
-	
-	/**
-	 * Convert a Peg pojo to a DTO object in order to avoid using entity business outside service layer.
-	 * @param pegsEntity
-	 * @return
-	 */
-	public  PegDTO[] convertPegsEntity2PegsDTO(Peg[] pegsEntity) {
-		PegDTO[] pegsDTO = new PegDTO[pegsEntity.length];
-		for (int i = 0; i < pegsEntity.length; i++) {
-			PegDTO dto = new PegDTO();
-			dto.setColor(pegsEntity[i].getColor());
-			pegsDTO[i] = dto;
-		}
-		
-		return pegsDTO;
-	}
 
 	
 	/* (non-Javadoc)
@@ -137,15 +100,20 @@ public class GameServiceImpl implements GameService{
 		ResponseDTO response = new ResponseDTO();
 		
 		Game game = findGameById(gameId); 
-		GameDTO gameDTO = convertGameEntity2GameDTO(game);;
+		GameDTO gameDTO = ServiceUtils.convertGameEntity2GameDTO(game);;
 		
 		validateGuessStructure(guess, gameDTO.getCode());
+		
+		response.getGuess().addAll(Arrays.asList(guess));
 		
 		//first check position and color correct, in order to avoid removing wrong white pegs then.
 		validateColorPosition(guess, response,gameDTO.getCode());
 		
 		//Second check only color correct
 		validateOnlyColor(guess, response,gameDTO.getCode());
+		
+		if(response.getOnlyColorGuess().size() == game.getCode().getPegs().length) 
+			response.setHasWon(Boolean.TRUE);
 		
 		return response;
 	}
@@ -161,7 +129,7 @@ public class GameServiceImpl implements GameService{
 		if(game!=null) {
 			return game;
 		}
-		throw new GuessException("201","Error retrieving the game");
+		throw new GuessException(ErrorCodes.MM_GUESS_201.getValue(),ErrorCodes.MM_GUESS_201.getDescription());
 	}
 	
 	
@@ -174,11 +142,11 @@ public class GameServiceImpl implements GameService{
 		if(guess != null && guess.length == code.getCodeSize()) {
 			for (PegDTO peg : guess) {
 				if(peg.getColor()==null) {
-					throw new GuessException("1205","Null pegs in the guess");
+					throw new GuessException(ErrorCodes.MM_GUESS_205.getValue(),ErrorCodes.MM_GUESS_205.getDescription());
 				}
 			}
 		}else {
-			throw new GuessException("203","Invalid guess length");
+			throw new GuessException(ErrorCodes.MM_GUESS_203.getValue(),ErrorCodes.MM_GUESS_203.getDescription());
 		}
 	}
 	
@@ -257,26 +225,7 @@ public class GameServiceImpl implements GameService{
 	@Override
 	public List<GuessHistoryDTO> getGameHistory(Long gameId) throws GuessException {
 		List<GuessHistory> history =  guessHistoryRepository.findByGameId(gameId);;
-		return convertGuessEntity2DTO(history);
+		return ServiceUtils.convertGuessEntity2DTO(history);
 	}
 	
-	/**
-	 * Convert a Guess  pojo to a GuessHistoryDTO object in order to avoid using entity business outside service layer.
-	 * This convert also converts the Pegs entities included in the GameHistory and its relations. 
-	 * @param pegsEntity
-	 * @return
-	 */
-	public List<GuessHistoryDTO> convertGuessEntity2DTO(List<GuessHistory> history){
-		List<GuessHistoryDTO> dtoList = new ArrayList();
-		for (GuessHistory guessHistory : history) {
-			GuessHistoryDTO dto = new GuessHistoryDTO();
-			dto.setGame(guessHistory.getGame().getId());
-			dto.setNumberBlack(guessHistory.getNumberBlack());
-			dto.setNumberWhite(guessHistory.getNumberWhite());
-			PegDTO[] pegsDTO = convertPegsEntity2PegsDTO(guessHistory.getPegs());
-			dto.setPegs(pegsDTO);
-			dtoList.add(dto);
-		}
-		return 	dtoList;
-	}
 }
