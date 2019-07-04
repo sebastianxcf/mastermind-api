@@ -22,6 +22,11 @@ import com.scastellanos.mastermind.exceptions.CreationException;
 import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.services.GameService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 
 @Controller
 @RequestMapping("/mastermind")
@@ -38,6 +43,10 @@ public class MastermindController {
 	 * Create a new game.
 	 * @return the id of the created game
 	 */
+	@ApiOperation(value = "MEJORAR ESTOS COMENTARIOS", responseContainer = "String", response = RestResponseDTO.class)
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "Success")
+    })
 	@RequestMapping(value="/new/{codeSize}", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<RestResponseDTO> createNewGame(@PathVariable("codeSize") Integer codeSize) {
 		GameIdResponse response;
@@ -59,7 +68,13 @@ public class MastermindController {
 	 * @return
 	 */
 	@RequestMapping(value="/guess/{gameId}", method = RequestMethod.POST)
-	public ResponseEntity<RestResponseDTO>  processGuess(@RequestBody PegDTO[] guess,@PathVariable("gameId")  Long gameId) {
+	@ApiOperation(value = "Process the guess for a given gameId")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "Successful retrieval of game guess",response = RestResponseDTO.class),
+            @ApiResponse(code = 500, message = "Internal Server Error"), 
+            @ApiResponse(code = 404, message = "The gameId does not exist") 
+        })
+	public ResponseEntity<RestResponseDTO>  processGuess(@ApiParam(value="List of elements that compose the guess")  @RequestBody PegDTO[] guess, @ApiParam(value="game id to guess")  @PathVariable("gameId")  Long gameId) {
 		ResponseDTO response = null;
 		try {
 			response = gameService.processGuess(guess, gameId);
@@ -77,8 +92,13 @@ public class MastermindController {
 	 * @param gameId
 	 * @return
 	 */
+	@ApiOperation(value = "Return the guess history for a given game")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "Success",response = RestResponseDTO.class),
+            @ApiResponse(code = 500, message = "Internal Server Error") 
+        })
 	@RequestMapping(value="/history/{gameId}", method = RequestMethod.GET)
-	public ResponseEntity<RestResponseDTO> getGameHistory( @PathVariable("gameId")  Long gameId) {
+	public ResponseEntity<RestResponseDTO> getGameHistory(@ApiParam(value="The game id to retrieve") @PathVariable("gameId")  Long gameId) {
 		List<GuessHistoryDTO> response = null;
 		try {
 			response = gameService.getGameHistory(gameId);
