@@ -1,5 +1,6 @@
 package com.scastellanos.mastermind.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +17,12 @@ import com.scastellanos.mastermind.dto.ResponseDTO;
 import com.scastellanos.mastermind.entity.Code;
 import com.scastellanos.mastermind.entity.Color;
 import com.scastellanos.mastermind.entity.Game;
+import com.scastellanos.mastermind.entity.GuessHistory;
 import com.scastellanos.mastermind.entity.Peg;
 import com.scastellanos.mastermind.exceptions.CreationException;
 import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.repository.GameRepository;
+import com.scastellanos.mastermind.repository.GuessHistoryRepository;
 
 
 
@@ -30,6 +33,10 @@ public class GameServiceImpl implements GameService{
 	
 	@Autowired
 	GameRepository gameRepository;
+	
+	
+	@Autowired
+	GuessHistoryRepository guessHistoryRepository;
 	
 	
 	
@@ -243,9 +250,33 @@ public class GameServiceImpl implements GameService{
 		return false;
 	}
 
+	/**
+	 * Return the history of guess attempts for a given game id. The response contains the guess, 
+	 * and a list of blacks hits and white hits. 
+	 */
 	@Override
 	public List<GuessHistoryDTO> getGameHistory(Long gameId) throws GuessException {
-		// TODO Auto-generated method stub
-		return null;
+		List<GuessHistory> history =  guessHistoryRepository.findByGameId(gameId);;
+		return convertGuessEntity2DTO(history);
+	}
+	
+	/**
+	 * Convert a Guess  pojo to a GuessHistoryDTO object in order to avoid using entity business outside service layer.
+	 * This convert also converts the Pegs entities included in the GameHistory and its relations. 
+	 * @param pegsEntity
+	 * @return
+	 */
+	public List<GuessHistoryDTO> convertGuessEntity2DTO(List<GuessHistory> history){
+		List<GuessHistoryDTO> dtoList = new ArrayList();
+		for (GuessHistory guessHistory : history) {
+			GuessHistoryDTO dto = new GuessHistoryDTO();
+			dto.setGame(guessHistory.getGame().getId());
+			dto.setNumberBlack(guessHistory.getNumberBlack());
+			dto.setNumberWhite(guessHistory.getNumberWhite());
+			PegDTO[] pegsDTO = convertPegsEntity2PegsDTO(guessHistory.getPegs());
+			dto.setPegs(pegsDTO);
+			dtoList.add(dto);
+		}
+		return 	dtoList;
 	}
 }
