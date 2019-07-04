@@ -68,7 +68,18 @@ public class MastermindController {
 	 * @return
 	 */
 	@RequestMapping(value="/guess/{gameId}", method = RequestMethod.POST)
-	@ApiOperation(value = "Process the guess for a given gameId")
+	@ApiOperation(value = "Process the guess for a given gameId. Posible colors: \n" + 
+			"	 *  BROWN,\n" + 
+			"		BLACK,\n" + 
+			"		BLUE,\n" + 
+			"		GREEN,\n" + 
+			"		ORANGE,\n" + 
+			"		PINK,\n" + 
+			"		PURPLE,\n" + 
+			"		RED,\n" + 
+			"		SILVER,\n" + 
+			"		WHITE,\n" + 
+			"		YELLOW" )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "Successful retrieval of game guess",response = RestResponseDTO.class),
             @ApiResponse(code = 500, message = "Internal Server Error"), 
