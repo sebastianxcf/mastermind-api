@@ -114,7 +114,7 @@ public class GameServiceImpl implements GameService{
 		
 		createGuessHistory(game, response, guess);
 		
-		if(response.getOnlyColorGuess().size() == game.getCode().getPegs().length) 
+		if(response.getPositionColorGuess().size() == game.getCode().getPegs().length) 
 			response.setHasWon(Boolean.TRUE);
 		
 		return response;
