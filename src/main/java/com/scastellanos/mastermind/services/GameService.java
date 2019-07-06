@@ -26,8 +26,9 @@ public interface GameService {
 	   * Given an id, return the DTO representation of the Game  
 	   * @param gameId 
 	   * @return 
+	 * @throws GuessException 
 	   */ 
-	GameDTO getGame(Long gameId);
+	GameDTO getGame(Long gameId) throws GuessException;
 	
 	
 	/**

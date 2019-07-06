@@ -84,10 +84,13 @@ public class GameServiceImpl implements GameService{
 	 * @see com.scastellanos.mastermind.services.GameService#getGame(java.lang.Long)
 	 */
 	@Override
-	public GameDTO getGame(Long gameId) {
+	public GameDTO getGame(Long gameId) throws GuessException {
 		Game game = gameRepository.findById(gameId).orElse(null);
-		GameDTO dto = ServiceUtils.convertGameEntity2GameDTO(game);
-		return dto;
+		if(game!=null) {
+			GameDTO gameDto = ServiceUtils.convertGameEntity2GameDTO(game);
+			return gameDto;
+		}else
+			 throw new GuessException(ErrorCodes.MM_GUESS_201.getValue(),ErrorCodes.MM_GUESS_201.getDescription());
 	}
 
 

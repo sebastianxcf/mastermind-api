@@ -25,6 +25,7 @@ import com.scastellanos.mastermind.entity.Color;
 import com.scastellanos.mastermind.exceptions.CreationException;
 import com.scastellanos.mastermind.exceptions.GuessException;
 import com.scastellanos.mastermind.services.GameService;
+import com.scastellanos.mastermind.util.ErrorCodes;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,22 +50,41 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
-	public void testNewGameCreationCheckCodeNotNull() throws CreationException{
+	public void testNewGameCreationCheckCodeNotNull() throws CreationException, GuessException{
 		GameDTO game = gameService.getGame(2L);
 		assertNotNull(game.getCode());
 	}
 	
 	@Test
-	public void testCheckCodeSizeIsOk() throws CreationException{
+	public void testCheckCodeSizeIsOk() throws CreationException, GuessException{
 		GameDTO game = gameService.getGame(2L);
 		assertEquals(4,game.getCode().getCodeSize());
 	}
+	
+	
+	@Test(expected = GuessException.class)
+	public void testGetGameWithWrongId() throws CreationException, GuessException{
+		try {
+			GameIdResponse gameIdResponse = gameService.createGame(4);
+			GameDTO game = gameService.getGame(60L);
+		}catch(GuessException e) {
+			assertEquals(e.getCode().toString(), ErrorCodes.MM_GUESS_201.getValue());
+			throw e;
+		}
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_201.getValue());			
+		}
 
 	
 	@Test(expected = CreationException.class)
 	public void testNewGameCreationCodeNegativeSize() throws CreationException {
-		gameService.createGame(-4);
-	}
+		try {
+			gameService.createGame(-4);
+		}catch(CreationException e) {
+			assertEquals(e.getCode().toString(), ErrorCodes.MM_CREATION_101.getValue());
+			throw e;
+		}
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_CREATION_101.getValue());			
+		}
 	
 	@Test(expected = GuessException.class)
 	public void testIncorrectGuessSize() throws CreationException, GuessException {
@@ -74,12 +94,18 @@ public class MastermindApplicationTests {
 		guessColors[2] = Color.GREEN;
 		
 		PegDTO [] guessCode = createGuessCode(guessColors);
+		try {
+			gameService.processGuess(guessCode,1L);
 		
-		gameService.processGuess(guessCode,1L);
-	}
+		}catch(GuessException e) {
+			assertEquals(e.getCode().toString(), ErrorCodes.MM_GUESS_203.getValue());
+			throw e;
+		}
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_203.getValue());			
+		}
 	
 	@Test(expected = GuessException.class)
-	public void testGameGuessWithNotColorsInPegs() throws Exception {
+	public void testGameGuessWithNotColorsInPegs() throws GuessException {
 		PegDTO[] guess = new PegDTO[4];
 		PegDTO p1 = new PegDTO();
 		PegDTO p2 = new PegDTO();
@@ -90,7 +116,13 @@ public class MastermindApplicationTests {
 		guess[1] = p2;
 		guess[2] = p3;
 		guess[3] = p4;
-		gameService.processGuess(guess, 1L);
+		try {
+			gameService.processGuess(guess, 1L);
+		}catch(GuessException e) {
+			assertEquals(e.getCode().toString(), ErrorCodes.MM_GUESS_205.getValue());
+			throw e;
+		}
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_205.getValue());			
 	}
 	
 	@Test
