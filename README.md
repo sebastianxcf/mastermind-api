@@ -1,4 +1,4 @@
-# Project Title
+# Mastermind REST-API
 
 Introduction
 
