@@ -55,9 +55,9 @@ find the endpoint
 
 ## Running the tests
 
-In order to execute the Junit test please run :
-## mvn test 
-At the end you will find a folder 
+In order to execute the Junit test please run : mvn test 
+
+This will generate the coverage results at :
 target/site/jacoco/index.html
 You can see the % of coverage of all the classes.
 Note that the GameServiceImpl is the core class and has a overage of 97%
