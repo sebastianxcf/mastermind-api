@@ -1,67 +1,76 @@
 # Project Title
 
-One Paragraph of project description goes here
+Introduction
+
+Mastermind is a code-breaking game for two
+players. One player becomes the codemaker , the
+other the codebreaker . The codemaker chooses a
+pattern of four color code pegs (duplicates
+allowed) and the codebreaker tries to guess it, in
+both order and color.
+Each guess is made by placing a row of color
+code pegs on the decoding board. Once placed,
+the codemaker provides feedback by placing from
+zero to four key pegs in the small holes of the row
+with the guess. A black key peg (small red in the
+image) is placed for each code peg from the guess
+which is correct in both color and position. A white
+key peg indicates the existence of a correct color
+code peg placed in the wrong position.
+
+Example: Given a code [RED, BLUE, GREEN, RED] when the codebreaker gives a code with
+[RED, GREEN, RED, YELLOW] the feedback will be: 1 black, 2 whites.
+For more information about the game: https://en.wikipedia.org/wiki/Mastermind_(board_game)
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
 Java8
+
 Docker (not mandatory)
+https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 ### Installing
 
+In order to deploy a new version of dev follow the next steps.
 
-A step by step series of examples that tell you how to get a development env running
+Run with docker:
+1) mvn -U clean install docker:build
+2) docker images
+This command will display all your docker images, you should see one named mastermind
+3) docker run --rm -p 8080:8080 mastermind
 
-Say what the step will be
+Run just the jar file:
+1) mvn -U clean install spring-boot:run
 
-```
-Give the example
-```
+In order to verify the installation, make a post request using Swagger
+http://localhost:8080/swagger-ui.html#/
 
-And repeat
+find the endpoint 
+/mastermind/new/{codeSize}
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+In order to execute the Junit test please run :
+## mvn test 
+At the end you will find a folder 
+target/site/jacoco/index.html
+You can see the % of coverage of all the classes.
+Note that the GameServiceImpl is the core class and has a overage of 97%
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Maven](https://maven.apache.org/) - Dependency Management
+In order to deploy a production version please run with active-profile = prod 
+docker run -e SPRING_PROFILES_ACTIVE=prod --rm -p 8080:8080 mastermind  --rm -p 8080:8080 mastermind 
 
 
 ## Authors
 
-* **Sebastian Castellanos** - *Initial work* - [PurpleBooth](https://github.com/sebastianxcf)
+* **Sebastian Castellanos** - *Initial work* - [Sebastianxcf](https://github.com/sebastianxcf)
 
 
 ## License
