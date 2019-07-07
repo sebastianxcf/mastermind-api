@@ -236,7 +236,19 @@ In order to get hte history you have to hit the GET endpoint
 
 ```
 
+## Git
+For new features please follow git flow.
 
+For every now feature >
+1) Create a new feature from development
+``` git flow feature start feature_name```
+2) Make your changes
+```git flow feature finish feature_name ```
+Finish feature - > Will auto merge on development
+3) Push development
+
+For UI in git client in linux I recommend [gitkraken](https://www.gitkraken.com/)
+ gitkraken
 
 
 
