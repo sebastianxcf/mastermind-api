@@ -236,13 +236,31 @@ In order to get hte history you have to hit the GET endpoint
 
 ```
 
+## Git
+For new features please follow git flow.
+
+For every now feature >
+1) Create a new feature from development
+``` git flow feature start feature_name```
+2) Make your changes
+```git flow feature finish feature_name ```
+Finish feature - > Will auto merge on development
+3) Push development
+
+For UI in git client in linux I recommend [gitkraken](https://www.gitkraken.com/)
+ 
+
+## Tech stack
+Spring Boot with spring mvc
+
+Spring Boot is an awesome framework to quickly build an Rest based Application.
+For persistence I used Spring data using h2 in memory database.
+
 ## Notes
+
 This implementation is a little variation of the original Mastermind game, with the following modifications:
 
-There is no limit to the number of guesses
-You can play differents games at the same time by switching the game id.
-
-
+There is no limit to the number of guesses You can play differents games at the same time by switching the game id.
 
 ## Authors
 
