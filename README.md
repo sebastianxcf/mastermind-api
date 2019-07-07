@@ -33,6 +33,15 @@ Java8
 Docker (not mandatory)
 https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
+## Configuration
+Application-prod.properties for prod configuration.
+Application-test.properties for test configuration.
+
+The database is a H2 in memory database,to browse the database go 
+http://localhost:{server.port}/h2
+
+ Credentials are in the application.propertie files
+
 ### Installing
 
 In order to deploy a new version of dev follow the next steps.
@@ -65,7 +74,9 @@ Note that the GameServiceImpl is the core class and has a overage of 97%
 ## Deployment
 
 In order to deploy a production version please run with active-profile = prod 
-docker run -e SPRING_PROFILES_ACTIVE=prod --rm -p 8080:8080 mastermind  --rm -p 8080:8080 mastermind 
+docker run -e SPRING_PROFILES_ACTIVE=prod --rm -p 8080:8080 mastermind  --rm -p 8080:8080 mastermind
+
+for
 
 
 ## Authors
