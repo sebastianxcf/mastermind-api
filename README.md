@@ -26,7 +26,7 @@ For more information about the game: https://en.wikipedia.org/wiki/Mastermind_(b
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+## Prerequisites
 
 Java8
 
@@ -42,18 +42,29 @@ http://localhost:{server.port}/h2
 
  Credentials are in the application.propertie files
 
-### Installing
+## Installing
 
 In order to deploy a new version of dev follow the next steps.
 
-Run with docker:
-1) mvn -U clean install docker:build
-2) docker images
-This command will display all your docker images, you should see one named mastermind
-3) docker run --rm -p 8080:8080 mastermind
+If you like to use docker, you can build a Docker image
+```bash
+mvn -U clean install docker:build
+```
+display the deployed images, you will find a mastermind image
+ ```bash
+ docker images
+ ```
+Then just run the docker image
 
-Run just the jar file:
-1) mvn -U clean install spring-boot:run
+ ```bash
+ docker run --rm -p 8080:8080 mastermind
+ ```
+ 
+ Otherwise you can run just the jar
+
+```bash
+mvn -U clean install spring-boot:run
+```
 
 In order to verify the installation, make a post request using Swagger
 http://localhost:8080/swagger-ui.html#/
@@ -67,16 +78,166 @@ find the endpoint
 In order to execute the Junit test please run : mvn test 
 
 This will generate the coverage results at :
-target/site/jacoco/index.html
+```target/site/jacoco/index.html```
 You can see the % of coverage of all the classes.
 Note that the GameServiceImpl is the core class and has a overage of 97%
 
 ## Deployment
 
-In order to deploy a production version please run with active-profile = prod 
-docker run -e SPRING_PROFILES_ACTIVE=prod --rm -p 8080:8080 mastermind  --rm -p 8080:8080 mastermind
+In order to deploy a production version please run with ```active-profile = prod```
 
-for
+```bash 
+docker run -e SPRING_PROFILES_ACTIVE=prod --rm -p 8080:8080 mastermind  --rm -p 8080:8080 mastermind 
+```
+
+
+## Game play
+### Create new game
+Please use swagger or postman
+
+http://localhost:8080/swagger-ui.html#/
+
+find the endpoint 
+```/mastermind/new/{codeSize}```
+As a input just put a code size 
+
+As a result you will get the autogeneraed game id
+```bash
+{
+  "data": {
+    "gameId": 1
+  }
+}
+```
+
+### New guess attempt 
+In order to play you have to hit the POST endpoint 
+```/mastermind/guess/{gameId}```
+
+
+Process the guess for a given gameId. 
+
+#### input json structure
+
+```gameId``` as a variable 
+
+#### Request Body 
+
+Posible colors:  
+BROWN, BLACK, BLUE, GREEN, ORANGE, PINK, PURPLE, RED, SILVER, WHITE, YELLOW
+
+``` bash
+[
+  {
+    "color": "BROWN"
+  },
+  {
+    "color": "YELLOW"
+  },
+  {
+    "color": "GREEN"
+  },
+  {
+    "color": "PINK"
+  }
+  
+]
+```
+#### Response Body
+``` bash
+{
+  "data": {
+    "guess": [
+      {
+        "color": "BROWN"
+      },
+      {
+        "color": "SILVER"
+      },
+      {
+        "color": "GREEN"
+      },
+      {
+        "color": "PINK"
+      }
+    ],
+    "onlyColorGuess": [
+      {
+        "color": "WHITE"
+      }
+    ],
+    "positionColorGuess": [
+      {
+        "color": "BLACK"
+      }
+    ],
+    "hasWon": false
+  }
+}
+```
+#### onlyColorGuess
+``` Only hit the color but not position ```  get one a white peg
+
+#### positionColorGuess
+```Hit position and color of the ball ``` get one black peg
+
+## Get guess history
+In order to get hte history you have to hit the GET endpoint 
+
+```/mastermind/history/{gameId}```
+
+```gameId``` as a variable 
+
+#### Response Body
+
+``` bash
+{
+  "data": [
+    {
+      "pegs": [
+        {
+          "color": "BROWN"
+        },
+        {
+          "color": "YELLOW"
+        },
+        {
+          "color": "GREEN"
+        },
+        {
+          "color": "PINK"
+        }
+      ],
+      "game": 1,
+      "numberBlack": 0,
+      "numberWhite": 1
+    },
+    {
+      "pegs": [
+        {
+          "color": "BROWN"
+        },
+        {
+          "color": "SILVER"
+        },
+        {
+          "color": "GREEN"
+        },
+        {
+          "color": "PINK"
+        }
+      ],
+      "game": 1,
+      "numberBlack": 1,
+      "numberWhite": 1
+    }
+  ]
+}
+
+```
+
+
+
 
 
 ## Authors
