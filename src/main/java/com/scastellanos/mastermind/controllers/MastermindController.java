@@ -43,7 +43,7 @@ public class MastermindController {
 	 * Create a new game.
 	 * @return the id of the created game
 	 */
-	@ApiOperation(value = "MEJORAR ESTOS COMENTARIOS", responseContainer = "String", response = RestResponseDTO.class)
+	@ApiOperation(value = "Given a code size, create a new game", responseContainer = "String", response = RestResponseDTO.class)
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "Success")
     })
