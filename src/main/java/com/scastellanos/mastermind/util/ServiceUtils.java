@@ -13,6 +13,11 @@ import com.scastellanos.mastermind.entity.Peg;
 
 public class ServiceUtils {
 	
+	/**
+	 * Convert a PegDTO to a peg entity object.
+	 * @param pegsDTO
+	 * @return
+	 */
 	public static Peg[] convertPegsDTO2PegsEntity(PegDTO[] pegsDTO) {
 		Peg[] pegsEntities = new Peg[pegsDTO.length];
 		for (int i = 0; i < pegsDTO.length; i++) {

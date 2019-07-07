@@ -107,6 +107,7 @@ public class GameServiceImpl implements GameService{
 		
 		validateGuessStructure(guess, gameDTO.getCode());
 		
+		//Add the guess pegs to the response
 		response.getGuess().addAll(Arrays.asList(guess));
 		
 		//first check position and color correct, in order to avoid removing wrong white pegs then.

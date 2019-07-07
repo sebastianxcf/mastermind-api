@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.scastellanos.mastermind.dto.GameDTO;
@@ -30,81 +33,91 @@ import com.scastellanos.mastermind.util.ErrorCodes;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = MastermindApplication.class)
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class MastermindApplicationTests {
 
-	
 	@Autowired
 	private GameService gameService;
-	
+
+//	@Before
+//	public void createNewGame() throws CreationException {
+//		gameIdResponse = gameService.createGame(4);
+//	}
+
 	@Test
-	public void contextLoads() {
-	}
-	
-	
-	@Test
-	public void testcreateNewGame() throws CreationException {
-		
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+			@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
+	public void /* testCreateNewGame() */ a() throws CreationException {
+
 		GameIdResponse gameIdResponse = gameService.createGame(4);
 		assertNotNull(gameIdResponse);
 	}
-	
+
 	@Test
-	public void testNewGameCreationCheckCodeNotNull() throws CreationException, GuessException{
-		GameDTO game = gameService.getGame(2L);
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+			@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
+	public void testNewGameCreationCheckCodeNotNull() throws CreationException, GuessException {
+		GameDTO game = gameService.getGame(1L);
 		assertNotNull(game.getCode());
 	}
-	
+
 	@Test
-	public void testCheckCodeSizeIsOk() throws CreationException, GuessException{
-		GameDTO game = gameService.getGame(2L);
-		assertEquals(4,game.getCode().getCodeSize());
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
+	public void testCheckCodeSizeIsOk() throws CreationException, GuessException {
+		GameDTO game = gameService.getGame(1L);
+		assertEquals(4, game.getCode().getCodeSize());
 	}
-	
-	
+
 	@Test(expected = GuessException.class)
-	public void testGetGameWithWrongId() throws CreationException, GuessException{
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
+	public void testGetGameWithWrongId() throws CreationException, GuessException {
 		try {
-			GameIdResponse gameIdResponse = gameService.createGame(4);
 			GameDTO game = gameService.getGame(60L);
-		}catch(GuessException e) {
+		} catch (GuessException e) {
 			assertEquals(e.getCode().toString(), ErrorCodes.MM_GUESS_201.getValue());
 			throw e;
 		}
-		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_201.getValue());			
-		}
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_201.getValue());
+	}
 
-	
 	@Test(expected = CreationException.class)
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testNewGameCreationCodeNegativeSize() throws CreationException {
 		try {
 			gameService.createGame(-4);
-		}catch(CreationException e) {
+		} catch (CreationException e) {
 			assertEquals(e.getCode().toString(), ErrorCodes.MM_CREATION_101.getValue());
 			throw e;
 		}
-		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_CREATION_101.getValue());			
-		}
-	
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_CREATION_101.getValue());
+	}
+
 	@Test(expected = GuessException.class)
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testIncorrectGuessSize() throws CreationException, GuessException {
 		Color[] guessColors = new Color[3];
 		guessColors[0] = Color.WHITE;
 		guessColors[1] = Color.ORANGE;
 		guessColors[2] = Color.GREEN;
-		
-		PegDTO [] guessCode = createGuessCode(guessColors);
+
+		PegDTO[] guessCode = createGuessCode(guessColors);
 		try {
-			gameService.processGuess(guessCode,1L);
-		
-		}catch(GuessException e) {
+			gameService.processGuess(guessCode, 1L);
+
+		} catch (GuessException e) {
 			assertEquals(e.getCode().toString(), ErrorCodes.MM_GUESS_203.getValue());
 			throw e;
 		}
-		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_203.getValue());			
-		}
-	
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_203.getValue());
+	}
+
 	@Test(expected = GuessException.class)
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWithNotColorsInPegs() throws GuessException {
 		PegDTO[] guess = new PegDTO[4];
 		PegDTO p1 = new PegDTO();
@@ -118,41 +131,34 @@ public class MastermindApplicationTests {
 		guess[3] = p4;
 		try {
 			gameService.processGuess(guess, 1L);
-		}catch(GuessException e) {
+		} catch (GuessException e) {
 			assertEquals(e.getCode().toString(), ErrorCodes.MM_GUESS_205.getValue());
 			throw e;
 		}
-		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_205.getValue());			
+		Assert.fail("Should throw a GuessException with code " + ErrorCodes.MM_GUESS_205.getValue());
 	}
-	
+
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGuessGameWithNonCorrectColor() throws CreationException, GuessException {
-		
+
 		Color[] guessColors = new Color[4];
 		guessColors[0] = Color.WHITE;
 		guessColors[1] = Color.ORANGE;
 		guessColors[2] = Color.GREEN;
 		guessColors[3] = Color.YELLOW;
-		
-		PegDTO [] guessCode = createGuessCode(guessColors);
-		
-		ResponseDTO r = gameService.processGuess(guessCode,1L);
-		assertEquals(0,r.getOnlyColorGuess().size());
-		assertEquals(0,r.getPositionColorGuess().size());
+
+		PegDTO[] guessCode = createGuessCode(guessColors);
+
+		ResponseDTO r = gameService.processGuess(guessCode, 1L);
+		assertEquals(0, r.getOnlyColorGuess().size());
+		assertEquals(0, r.getPositionColorGuess().size());
 	}
-	
-	
-	
-	PegDTO[] createGuessCode(Color[] colors) {
-		PegDTO[] PegDTOs = new PegDTO[colors.length];
-		for (int i = 0; i < colors.length; i++) {
-			PegDTO p = new PegDTO(colors[i]);
-			PegDTOs[i] = p;
-		}
-		return PegDTOs;
-	}
-	
+
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWithOnlyOneColorPositionCorrect() throws CreationException, GuessException {
 		
 		Color[] guessColors = new Color[4];
@@ -169,6 +175,8 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWithOneColorAndPositionsCorrect() throws CreationException, GuessException {
 		
 		
@@ -186,6 +194,8 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWinGame() throws CreationException, GuessException {
 		
 		Color[] guessColors = new Color[4];
@@ -203,6 +213,8 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGuessGameWithOnlyOneColorCorrect() throws CreationException, GuessException  {
 		
 		Color[] guessColors = new Color[4];
@@ -223,6 +235,8 @@ public class MastermindApplicationTests {
 	 * @throws Exception
 	 */
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGuessWhenMoreThanOneSameColorInTheGuessButOnlyOneInTheCode() throws CreationException, GuessException {
 		
 		Color[] guessColors = new Color[4];
@@ -245,6 +259,8 @@ public class MastermindApplicationTests {
 	 * @throws GuessException
 	 */
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWhichPrioritizePositionCorrectThanColorCorrect() throws CreationException, GuessException {
 		
 		Color[] guessColors = new Color[4];
@@ -265,6 +281,8 @@ public class MastermindApplicationTests {
 	 * @throws GuessException
 	 */
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWithLessBallsInGuessThanInCode() throws CreationException, GuessException {
 		
 		
@@ -282,6 +300,8 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessOnlyColorsCorrect() throws CreationException, GuessException {
 		
 		Color[] guessColors = new Color[4];
@@ -299,6 +319,8 @@ public class MastermindApplicationTests {
 	
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWithGameHistory() throws CreationException, GuessException {
 		GameIdResponse gameIdResponse = gameService.createGame(4);
 		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
@@ -321,6 +343,8 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessEmptyGameHistory() throws CreationException, GuessException {
 		GameIdResponse gameIdResponse = gameService.createGame(4);
 		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
@@ -332,6 +356,8 @@ public class MastermindApplicationTests {
 	}
 	
 	@Test
+	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
+		@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
 	public void testGameGuessWithNonEmptyGameHistory() throws CreationException, GuessException {
 		GameIdResponse gameIdResponse = gameService.createGame(4);
 		GameDTO game = gameService.getGame(gameIdResponse.getGameId());
@@ -349,5 +375,14 @@ public class MastermindApplicationTests {
 		List<GuessHistoryDTO> result = gameService.getGameHistory(game.getId());
 		assertTrue(!result.isEmpty());
 		
+	}
+
+	PegDTO[] createGuessCode(Color[] colors) {
+		PegDTO[] PegDTOs = new PegDTO[colors.length];
+		for (int i = 0; i < colors.length; i++) {
+			PegDTO p = new PegDTO(colors[i]);
+			PegDTOs[i] = p;
+		}
+		return PegDTOs;
 	}
 }
