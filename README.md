@@ -236,7 +236,11 @@ In order to get hte history you have to hit the GET endpoint
 
 ```
 
+## Notes
+This implementation is a little variation of the original Mastermind game, with the following modifications:
 
+There is no limit to the number of guesses
+You can play differents games at the same time by switching the game id.
 
 
 
