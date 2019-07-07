@@ -251,7 +251,7 @@ For UI in git client in linux I recommend [gitkraken](https://www.gitkraken.com/
  
 
 ## Tech stack
-Spring Boot with spring mvn
+Spring Boot with spring mvc
 
 Spring Boot is an awesome framework to quickly build an Rest based Application.
 For persistence I used Spring data using h2 in memory database.
