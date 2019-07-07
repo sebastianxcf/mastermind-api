@@ -248,7 +248,7 @@ Finish feature - > Will auto merge on development
 3) Push development
 
 For UI in git client in linux I recommend [gitkraken](https://www.gitkraken.com/)
- gitkraken
+ 
 
 
 
