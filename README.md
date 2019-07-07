@@ -256,6 +256,12 @@ Spring Boot with spring mvc
 Spring Boot is an awesome framework to quickly build an Rest based Application.
 For persistence I used Spring data using h2 in memory database.
 
+## Notes
+
+This implementation is a little variation of the original Mastermind game, with the following modifications:
+
+There is no limit to the number of guesses You can play differents games at the same time by switching the game id.
+
 ## Authors
 
 * **Sebastian Castellanos** - *Initial work* - [Sebastianxcf](https://github.com/sebastianxcf)
