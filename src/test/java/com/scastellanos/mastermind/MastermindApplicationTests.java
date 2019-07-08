@@ -39,19 +39,6 @@ public class MastermindApplicationTests {
 	@Autowired
 	private GameService gameService;
 
-//	@Before
-//	public void createNewGame() throws CreationException {
-//		gameIdResponse = gameService.createGame(4);
-//	}
-
-	@Test
-	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),
-			@Sql(executionPhase = ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:drop.sql") })
-	public void /* testCreateNewGame() */ a() throws CreationException {
-
-		GameIdResponse gameIdResponse = gameService.createGame(4);
-		assertNotNull(gameIdResponse);
-	}
 
 	@Test
 	@SqlGroup({ @Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:seed.sql"),

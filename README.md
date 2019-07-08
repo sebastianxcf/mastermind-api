@@ -262,6 +262,14 @@ This implementation is a little variation of the original Mastermind game, with 
 
 There is no limit to the number of guesses You can play differents games at the same time by switching the game id.
 
+### Assumptions
+
+In the scenario that we have in the guess more Pegs of correct color that in the code,it will count only one for each Peg in the code.
+
+In the case of two pegs of same colors (one of them correct position) will prioritize the one that is also in the same position.
+
+In the case of have in the guess a hit on color with two same color in the code, will count only one as correct.
+
 ## Authors
 
 * **Sebastian Castellanos** - *Initial work* - [Sebastianxcf](https://github.com/sebastianxcf)
